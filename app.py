@@ -123,7 +123,6 @@ def room_message(data):
         DATA[branch] = {
         'status': 'active',
         'openedTime': currTime,
-        'date': currTime #FIXME date??
         }
 
         DATA[branch]['messages'] = []
@@ -142,6 +141,12 @@ def room_message(data):
         'message': message,
         'branch': room,
         'isBranch': True
+        },
+        room=room)
+
+        emit('new branch', {
+        'status': DATA[branch]['status'],
+        'openedTime': DATA[branch]['openedTime']
         },
         room=room)
     
