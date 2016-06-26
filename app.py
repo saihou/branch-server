@@ -117,6 +117,11 @@ def room_message(data):
     global DATA
     currTime = str(int(time.time()))
 
+    newMessage = {
+                'username': username,
+                'message': message
+                }
+
     # create new branch
     if branch not in DATA.keys():
         print 'Creating new branch'
@@ -128,18 +133,25 @@ def room_message(data):
 
         DATA[branch]['messages'] = []
 
-    newMessage = {
-            'username': username,
-            'message': message
-            }
+        # also add to main branch
+        newMessageForMain = newMessage
+        newMessageForMain['isBranch'] = True
+        DATA[room]['messages'].append(newMessageForMain)
 
-    DATA[branch]['messages'].append(newMessage);
-
+        emit('send room message', {
+        'username': username,
+        'message': message,
+        'branch': room,
+        'isBranch': True
+        },
+        room=room)
+    
+    DATA[branch]['messages'].append(newMessage)
     # Emit every messages of this room
     emit('send room message', {
         'username': username,
         'message': message,
-        'branch':branch
+        'branch': branch
         },
         room=room)
 
