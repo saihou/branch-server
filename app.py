@@ -101,7 +101,7 @@ def join(data):
     #             sentiments_aggregates[user] = sentiments[user]["aggregate"]["sentiment"]
     #         DATA[item]["sentiments"] = sentiments_aggregates
 
-    pprint(DATA)
+    # pprint(DATA)
 
     # Emit every messages
     emit('joined room', {
@@ -184,20 +184,20 @@ def update_summary(branch):
     locationOccurrences = 0;
     datetime = ''
     datetimeOccurrences = 0;
+    datetimeSeq = 0;
     activity = ''
     activityOccurrences = 0;
+    pprint(entities)
     for entity in entities:
         if entity["type"] == 'location':
             if entity["occurrences"] > locationOccurrences:
                 location = entity["entity"]
                 locationOccurrences = entity["occurrences"]
         elif entity["type"] == 'datetime':
-            if entity["occurrences"] > datetimeOccurrences:
+            if entity["occurrences"] >= datetimeOccurrences and entity["seq"] > datetimeSeq:
                 datetime = entity["entity"]
                 datetimeOccurrences = entity["occurrences"]
         else:
-            pprint('else case')
-            pprint(entity)
             if entity["occurrences"] > activityOccurrences:
                 activity = entity["entity"]
                 activityOccurrences = entity["occurrences"]
