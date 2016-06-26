@@ -23,8 +23,8 @@
 	},
 	"Shall we watch Finding Dory tonight?": {
 		"status": "inactive",
-		"openedTime": 1466870400000,
-		"closedTime": 1466877600000,
+		"openedTime": 1466870400,
+		"closedTime": 1466877600,
 		"date": 1466883600000,
 		"location": "Cinemark Mountain View",
 		"activity": "Watch Finding Dory",

@@ -41,6 +41,7 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
 import json
 from pprint import pprint
+import hpe_api
 
 DATA = None
 
@@ -107,11 +108,11 @@ def room_message(data):
     room = room_name
     username = data['username']
     message = data['message']
+
     if data['branch_name']:
         branch = data['branch_name']
     else:
         branch = room
-
 
     global DATA
     currTime = str(int(time.time()))
@@ -157,7 +158,7 @@ def leave(data):
         room=room)
 
 # As a user disconnect
-@socketio.on('disconnect request', namespace='branch')
+@socketio.on('disconnect request', namespace='/branch')
 def disconnect_request():
     emit('disconnected', {
         'message': 'Disconnected!'
@@ -167,6 +168,13 @@ def disconnect_request():
 @socketio.on('disconnect', namespace='/branch')
 def test_disconnect():
     print('Client disconnected', request.sid)
+
+@socketio.on('close_branch', namespace='/branch')
+def close_branch(branch):
+    global DATA
+    currTime = str(int(time.time()))
+    DATA[branch]['status'] = 'inactive'
+    DATA[branch]['closedTime'] = currTime
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, host='0.0.0.0')
