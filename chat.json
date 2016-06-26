@@ -1,0 +1,62 @@
+{
+	"main": {
+		"status": "active",
+		"messages": [
+			{
+				"username": "Jessica",
+				"message": "Hey guys!"
+			},
+			{
+				"username": "Jack",
+				"message": "Hey!"
+			},
+			{
+				"username": "Hayley",
+				"message": "Hey what's up?"
+			},
+			{
+				"username": "Jessica",
+				"message": "Shall we watch Finding Dory tonight?",
+				"isBranch": true
+			}
+		]
+	},
+	"Shall we watch Finding Dory tonight?": {
+		"status": "inactive",
+		"openedTime": 1466870400000,
+		"closedTime": 1466877600000,
+		"date": 1466883600000,
+		"location": "Cinemark Mountain View",
+		"activity": "Watch Finding Dory",
+		"messages": [
+			{
+				"username": "Jack",
+				"message": "Sure! Let me know the time."
+			},
+			{
+				"username": "Jessica",
+				"message": "Is it okay to be 740pm?"
+			},
+			{
+				"username": "Hayley",
+				"message": "Sure but how about we watch Independence Day instead?"
+			},
+			{
+				"username": "Jessica",
+				"message": "The review is not as good as Finding Dory though."
+			},
+			{
+				"username": "Jack",
+				"message": "I prefer Finding Dory."
+			},
+			{
+				"username": "Hayley",
+				"message": "Ok, Finding Dory then."
+			},
+			{
+				"username": "Jessica",
+				"message": "I will book the ticket at Cinemark Mountain View"
+			}
+		]
+	}
+}
