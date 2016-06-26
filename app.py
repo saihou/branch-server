@@ -41,7 +41,7 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
 import json
 from pprint import pprint
-import hpe_api
+import hpe_api as hpe_client
 
 DATA = None
 
@@ -100,7 +100,7 @@ def join(data):
         },
         room=room)
 
-    pprint(DATA)
+    #pprint(DATA)
 
 # New message in a room
 @socketio.on('room message', namespace='/branch')
@@ -117,11 +117,6 @@ def room_message(data):
     global DATA
     currTime = str(int(time.time()))
 
-    newMessage = {
-                'username': username,
-                'message': message
-                }
-
     # create new branch
     if branch not in DATA.keys():
         print 'Creating new branch'
@@ -134,8 +129,12 @@ def room_message(data):
         DATA[branch]['messages'] = []
 
         # also add to main branch
-        newMessageForMain = newMessage
-        newMessageForMain['isBranch'] = True
+        newMessageForMain = {
+                'username': username,
+                'message': message,
+                'isBranch': True
+                }
+
         DATA[room]['messages'].append(newMessageForMain)
 
         emit('send room message', {
@@ -146,7 +145,12 @@ def room_message(data):
         },
         room=room)
     
+    newMessage = {
+                'username': username,
+                'message': message
+                }
     DATA[branch]['messages'].append(newMessage)
+
     # Emit every messages of this room
     emit('send room message', {
         'username': username,
@@ -154,8 +158,42 @@ def room_message(data):
         'branch': branch
         },
         room=room)
+    update_summary(branch)
+    #pprint(DATA)
 
-    pprint(DATA)
+def update_summary(branch):
+    room = room_name
+    global DATA
+    entities = hpe_client.get_relevant_entities(branch, DATA)
+    location = ''
+    locationOccurrences = 0;
+    datetime = ''
+    datetimeOccurrences = 0;
+    activity = ''
+    activityOccurrences = 0;
+    for entity in entities:
+        if entity["type"] == 'location':
+            if entity["occurrences"] > locationOccurrences:
+                location = entity["entity"]
+                locationOccurrences = entity["occurrences"]
+        elif entity["type"] == 'datetime':
+            if entity["occurrences"] > datetimeOccurrences:
+                datetime = entity["entity"]
+                datetimeOccurrences = entity["occurrences"]
+        else:
+            pprint('else case')
+            pprint(entity)
+            if entity["occurrences"] > activityOccurrences:
+                activity = entity["entity"]
+                activityOccurrences = entity["occurrences"]
+    emit('branch info', {
+        'branch_name': branch,
+        'location': location,
+        'datetime': datetime,
+        'activity': activity
+        },
+        room=room)
+    
 
 # As a user leaves the room
 @socketio.on('leave', namespace='/branch')

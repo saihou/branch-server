@@ -42,6 +42,14 @@
             	$('#log').append('<br>' + $('<div/>').text(msg.username + ' has left the room :' + msg.room + '"!').html());
             });
 
+            socket.on('branch info', function(info) {
+                var d = new Date(info.datetime * 1000);
+                $('#log').append('<br>' + $('<div/>').text(
+                    info.branch_name + '-- has new info:' +
+                    info.activity + ' ' + d.toUTCString() +
+                    ' ' + info.location).html());
+            });
+
             // handlers for the different forms in the page
             // these send data to the server in a variety of ways
             $('form#join').submit(function(event) {

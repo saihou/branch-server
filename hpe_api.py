@@ -6,12 +6,12 @@ from pprint import pprint
 
 client = HODClient("2ce81803-a67f-423b-84be-68661802991d", version="v1")
 
-with open('chat.json') as data:
-	chat_data = json.load(data)
+# with open('chat.json') as data:
+# 	chat_data = json.load(data)
 
 # pprint(chat_data)
 
-def extract_branch_messages(branch):
+def extract_branch_messages(branch, chat_data):
 	msg = branch
 	branch_msg = chat_data[branch]["messages"]
 	for item in branch_msg:
@@ -20,8 +20,8 @@ def extract_branch_messages(branch):
 	data = {'text': msg}
 	return data
 
-def get_entities(branch):
-	params = extract_branch_messages(branch)
+def get_entities(branch, chat_data):
+	params = extract_branch_messages(branch, chat_data)
 	params["entity_type"] = ["films_eng"]
 	response = client.get_request(params, HODApps.ENTITY_EXTRACTION, async=False)
 	entities = []
@@ -32,8 +32,8 @@ def get_entities(branch):
 			continue
 	return entities
 
-def get_concepts(branch):
-	params = extract_branch_messages(branch)
+def get_concepts(branch, chat_data):
+	params = extract_branch_messages(branch, chat_data)
 	response = client.get_request(params, HODApps.EXTRACT_CONCEPTS, async=False)
 	return response['concepts']
 
@@ -45,7 +45,7 @@ def unix_time_sec(dt):
 	sec = (dt - epoch).total_seconds()
 	return int(sec)
 
-def get_date_time_occurence(branch):
+def get_date_time_occurrences(branch, chat_data):
 	data = {}
 	messages = [branch]
 	messages.extend(list(map(get_message, chat_data[branch]["messages"])))
@@ -73,12 +73,11 @@ def get_date_time_occurence(branch):
 		curr["entity"] = key
 		result.append(curr)
 	return result
-pprint(get_date_time_occurence("Shall we watch Finding Dory tonight?"))
 
-def get_relevant_concepts(branch):
+def get_relevant_entities(branch, chat_data):
 	data = []
-	entities = get_entities(branch)
-	for item in get_concepts(branch):
+	entities = get_entities(branch, chat_data)
+	for item in get_concepts(branch, chat_data):
 		curr = {}
 		if item['concept'] in entities:
 			curr['entity'] = item['concept']
@@ -91,10 +90,10 @@ def get_relevant_concepts(branch):
 			data.append(curr)
 		else:
 			continue
-	data.extend(get_date_time_occurence(branch))
+	data.extend(get_date_time_occurrences(branch, chat_data))
 	return data
 
-def normalize_user_msg(branch):
+def normalize_user_msg(branch, chat_data):
 	data = {}
 	for item in chat_data[branch]["messages"]:
 		username = item['username']
@@ -105,9 +104,9 @@ def normalize_user_msg(branch):
 		data[username] += message
 	return data
 
-def get_user_sentimens(branch):
+def get_user_sentimens(branch, chat_data):
 	data = {}
-	user_data = normalize_user_msg(branch)
+	user_data = normalize_user_msg(branch, chat_data)
 	for user in user_data.keys():
 		params = {'text': user_data[user]}
 		response = client.get_request(params, HODApps.ANALYZE_SENTIMENT, async=False)
