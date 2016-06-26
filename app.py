@@ -182,7 +182,7 @@ def update_summary(branch):
     entities = hpe_client.get_relevant_entities(branch, DATA)
     location = ''
     locationOccurrences = 0;
-    datetime = ''
+    datetime = 0
     datetimeOccurrences = 0;
     datetimeSeq = 0;
     activity = ''

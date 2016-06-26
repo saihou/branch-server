@@ -85,6 +85,7 @@ def get_relevant_entities(branch, chat_data):
 		elif "cinema" in item['concept'].lower():
 			curr['entity'] = item['concept']
 			curr['type'] = 'location'
+			curr['occurrences'] = item['occurrences']
 			data.append(curr)
 		else:
 			continue
