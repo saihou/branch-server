@@ -48,7 +48,7 @@ DATA = None
 with open('chat.json') as data_file:
     DATA = json.load(data_file)
 
-pprint(DATA)
+# pprint(DATA)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -91,6 +91,17 @@ def join(data):
     #                     'messages' : messages_branch}
 
     # print json # RETURN THIS
+
+    # get sentiments
+    # for item in DATA.keys():
+    #     if item != "main":
+    #         sentiments = hpe_client.get_user_sentiments(item, DATA)
+    #         sentiments_aggregates = {}
+    #         for user in sentiments.keys():
+    #             sentiments_aggregates[user] = sentiments[user]["aggregate"]["sentiment"]
+    #         DATA[item]["sentiments"] = sentiments_aggregates
+
+    pprint(DATA)
 
     # Emit every messages
     emit('joined room', {

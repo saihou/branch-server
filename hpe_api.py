@@ -9,8 +9,6 @@ client = HODClient("2ce81803-a67f-423b-84be-68661802991d", version="v1")
 # with open('chat.json') as data:
 # 	chat_data = json.load(data)
 
-# pprint(chat_data)
-
 def extract_branch_messages(branch, chat_data):
 	msg = branch
 	branch_msg = chat_data[branch]["messages"]
@@ -104,7 +102,7 @@ def normalize_user_msg(branch, chat_data):
 		data[username] += message
 	return data
 
-def get_user_sentimens(branch, chat_data):
+def get_user_sentiments(branch, chat_data):
 	data = {}
 	user_data = normalize_user_msg(branch, chat_data)
 	for user in user_data.keys():
@@ -113,6 +111,6 @@ def get_user_sentimens(branch, chat_data):
 		data[user] = response
 	return data
 
-# pprint(get_user_sentimens("Shall we watch Finding Dory tonight?"))
+# pprint(get_user_sentiments("Shall we watch Finding Dory tonight?", chat_data))
 # def get_summary(branch):
 # pprint(get_entities("Shall we watch Finding Dory tonight?"))

@@ -28,6 +28,11 @@
 		"datetime": 1466883600,
 		"location": "Cinemark Mountain View",
 		"activity": "Watch Finding Dory",
+		"sentiments": {
+				"Hayley": "neutral",
+				"Jack": "neutral",
+				"Jessica": "negative"
+			},
 		"messages": [
 			{
 				"username": "Jack",
