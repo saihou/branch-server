@@ -40,10 +40,10 @@ def get_concepts(branch):
 def get_message(item): 
 	return item["message"]
 
-def unix_time_millis(dt):
+def unix_time_sec(dt):
 	epoch = datetime.utcfromtimestamp(0)
-	millis = (dt - epoch).total_seconds() * 1000.0
-	return int(millis)
+	sec = (dt - epoch).total_seconds()
+	return int(sec)
 
 def get_date_time_occurence(branch):
 	data = {}
@@ -56,23 +56,24 @@ def get_date_time_occurence(branch):
 		time_struct, parse_status = cal.parse(message)
 		if (parse_status > 0):
 			datetimevalue = datetime(*time_struct[:6])
-			millis = unix_time_millis(datetimevalue)
-			if millis in data.keys():
-				curr["seq"] = data[millis]["seq"]
-				curr["occurrences"] = data[millis]["occurrences"] + 1
+			sec = unix_time_sec(datetimevalue)
+			if sec in data.keys():
+				curr["seq"] = data[sec]["seq"]
+				curr["occurrences"] = data[sec]["occurrences"] + 1
 				curr["type"] = "datetime"
 			else:
 				curr["seq"] = seq
 				curr["occurrences"] = 1
 				curr["type"] = "datetime"
 				seq += 1
-			data[millis] = curr
+			data[sec] = curr
 	result = []
 	for key in data.keys():
 		curr = data[key]
 		curr["entity"] = key
 		result.append(curr)
 	return result
+pprint(get_date_time_occurence("Shall we watch Finding Dory tonight?"))
 
 def get_relevant_concepts(branch):
 	data = []
