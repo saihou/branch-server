@@ -39,6 +39,15 @@ from threading import Thread
 from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
+import json
+from pprint import pprint
+
+DATA = None
+
+with open('chat.json') as data_file:
+    DATA = json.load(data_file)
+
+pprint(DATA)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -61,71 +70,79 @@ def join(data):
     print('joined room')
 
     # Initialize the record for this room if room is new
-    global MESSAGES
-    if room not in MESSAGES.keys():
-        print('hey')
-        MESSAGES[room] = []
-        BRANCHES.append(room)
+    global DATA
+    # if room not in DATA.keys():
+    #     print('hey')
+    #     MESSAGES[room] = []
+    #     BRANCHES.append(room)
+    # # json = {}
 
-    json = {}
+    # for branch in BRANCHES:
+    #     #print branch
+    #     json[branch] = []
 
-    for branch in BRANCHES:
-        #print branch
-        json[branch] = []
+    #     messages_branch = []
+    #     for message in MESSAGES[room]:
+    #         if message['branch'] == branch:
+    #             messages_branch.append(message)
 
-        messages_branch = []
-        for message in MESSAGES[branch]:
-            print message
-            if message['branch'] == branch:
-                messages_branch.append(message)
+    #     json[branch] = {'status': 'active',
+    #                     'messages' : messages_branch}
 
-        json[branch] = {'status': 'active',
-                        'messages' : messages_branch}
-
-    print json #RETURN THIS
+    # print json # RETURN THIS
 
     # Emit every messages
     emit('joined room', {
         'username': username,
         'room': room,
-        'messages': MESSAGES[room]
+        'chat': DATA
         },
         room=room)
-    print MESSAGES[room]
+
+    pprint(DATA)
 
 # New message in a room
 @socketio.on('room message', namespace='/branch')
 def room_message(data):
-    room = data['room']
+    room = room_name
     username = data['username']
     message = data['message']
+    if data['branch_name']:
+        branch = data['branch_name']
+    else:
+        branch = room
+
+
+    global DATA
     currTime = str(int(time.time()))
 
-    create_new_branch = data['new_branch']
-    branch = room if not create_new_branch else message
+    # create new branch
+    if branch not in DATA.keys():
+        print 'Creating new branch'
+        DATA[branch] = {
+        'status': 'active',
+        'openedTime': currTime,
+        'date': currTime #FIXME date??
+        }
 
-    # Append the message to the record of this room
-    global MESSAGES
-    newJson = {
+        DATA[branch]['messages'] = []
+
+    newMessage = {
             'username': username,
-            'message': message,
-            'time': currTime,
-            'branch': branch
+            'message': message
             }
-    if room in MESSAGES.keys():
-        MESSAGES[room].append(newJson)
-    else:
-        MESSAGES[room] = [newJson]
+
+    DATA[branch]['messages'].append(newMessage);
 
     # Emit every messages of this room
     emit('send room message', {
         'username': username,
-        'room': room,
         'message': message,
-        'time': currTime,
         'branch':branch
         },
         room=room)
+
+    pprint(DATA)
 
 # As a user leaves the room
 @socketio.on('leave', namespace='/branch')
