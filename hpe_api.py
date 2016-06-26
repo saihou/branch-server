@@ -1,5 +1,7 @@
 from havenondemand.hodclient import *
 import json
+import parsedatetime
+from datetime import datetime
 from pprint import pprint
 
 client = HODClient("2ce81803-a67f-423b-84be-68661802991d", version="v1")
@@ -35,6 +37,43 @@ def get_concepts(branch):
 	response = client.get_request(params, HODApps.EXTRACT_CONCEPTS, async=False)
 	return response['concepts']
 
+def get_message(item): 
+	return item["message"]
+
+def unix_time_millis(dt):
+	epoch = datetime.utcfromtimestamp(0)
+	millis = (dt - epoch).total_seconds() * 1000.0
+	return int(millis)
+
+def get_date_time_occurence(branch):
+	data = {}
+	messages = [branch]
+	messages.extend(list(map(get_message, chat_data[branch]["messages"])))
+	cal = parsedatetime.Calendar()
+	seq = 0;
+	for message in messages:
+		curr = {}
+		time_struct, parse_status = cal.parse(message)
+		if (parse_status > 0):
+			datetimevalue = datetime(*time_struct[:6])
+			millis = unix_time_millis(datetimevalue)
+			if millis in data.keys():
+				curr["seq"] = data[millis]["seq"]
+				curr["occurrences"] = data[millis]["occurrences"] + 1
+				curr["type"] = "datetime"
+			else:
+				curr["seq"] = seq
+				curr["occurrences"] = 1
+				curr["type"] = "datetime"
+				seq += 1
+			data[millis] = curr
+	result = []
+	for key in data.keys():
+		curr = data[key]
+		curr["entity"] = key
+		result.append(curr)
+	return result
+
 def get_relevant_concepts(branch):
 	data = []
 	entities = get_entities(branch)
@@ -51,10 +90,10 @@ def get_relevant_concepts(branch):
 			data.append(curr)
 		else:
 			continue
+	data.extend(get_date_time_occurence(branch))
 	return data
 
 def normalize_user_msg(branch):
-	users = []
 	data = {}
 	for item in chat_data[branch]["messages"]:
 		username = item['username']
