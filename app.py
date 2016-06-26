@@ -46,6 +46,7 @@ socketio = SocketIO(app, async_mode=async_mode)
 room_name = 'main'
 
 MESSAGES = {}
+BRANCHES = []
 
 @app.route('/')
 def index():
@@ -64,6 +65,24 @@ def join(data):
     if room not in MESSAGES.keys():
         print('hey')
         MESSAGES[room] = []
+        BRANCHES.append(room)
+
+    json = {}
+
+    for branch in BRANCHES:
+        #print branch
+        json[branch] = []
+
+        messages_branch = []
+        for message in MESSAGES[branch]:
+            print message
+            if message['branch'] == branch:
+                messages_branch.append(message)
+
+        json[branch] = {'status': 'active',
+                        'messages' : messages_branch}
+
+    print json #RETURN THIS
 
     # Emit every messages
     emit('joined room', {
@@ -82,12 +101,16 @@ def room_message(data):
     message = data['message']
     currTime = str(int(time.time()))
 
+    create_new_branch = data['new_branch']
+    branch = room if not create_new_branch else message
+
     # Append the message to the record of this room
     global MESSAGES
     newJson = {
             'username': username,
             'message': message,
-            'time': currTime
+            'time': currTime,
+            'branch': branch
             }
     if room in MESSAGES.keys():
         MESSAGES[room].append(newJson)
@@ -99,7 +122,8 @@ def room_message(data):
         'username': username,
         'room': room,
         'message': message,
-        'time': currTime
+        'time': currTime,
+        'branch':branch
         },
         room=room)
 

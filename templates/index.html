@@ -21,13 +21,15 @@
                 } else {
                     $('#log').append('<br>' + $('<div/>').text(msg.username + ' joined the room "' + msg.room + '"!').html());
                     for (var i = 0; i < msg.messages.length; i++) {
-                        $('#log').append('<br>' + $('<div/>').text(msg.messages[i].username + ': ' + msg.messages[i].message).html());
+                        $('#log').append('<br>' + $('<div/>').text(msg.messages[i].username + ': ' + msg.messages[i].message).html() + ' ------- branch: ' + msg.messages[i].branch);
                     };
                 };
             });
 
             socket.on('send room message', function(msg) {
-            	$('#log').append('<br>' + $('<div/>').text(msg.username + ': ' + msg.message).html());
+            	$('#log').append('<br>' + $('<div/>').text(msg.username + ': ' + msg.message).html() + ' ------- branch: ' + msg.branch);
+
+                $('#currentBranch').append('<br>' + 'CURRENT BRANCH: ' + 'placeholder');
             });
 
             socket.on('left room', function(msg) {
@@ -45,7 +47,8 @@
                 return false;
             });
             $('form#send_room').submit(function(event) {
-                socket.emit('room message', {room: $('#room_name').val(), message: $('#room_data').val(), 'username':username});
+                socket.emit('room message', {room: $('#room_name').val(), message: $('#room_data').val(), 'username':username,
+                    new_branch: $('#new_branch').is(':checked')});
                 return false;
             });
             $('form#disconnect').submit(function(event) {
@@ -77,11 +80,14 @@
     <form id="send_room" method="POST" action='#'>
         <input type="text" name="room_name" id="room_name" placeholder="Room Name" value="main">
         <input type="text" name="room_data" id="room_data" placeholder="Message">
+        git checkout
+        <input type="checkbox" name="new_branch" id="new_branch">
         <input type="submit" value="Send to Room">
     </form>
     <form id="disconnect" method="POST" action="#">
         <input type="submit" value="Disconnect">
     </form>
+    <h3><div id = "currentBranch"></div></h3>
     <h2>Receive:</h2>
     <div id="log"></div>
 </body>
