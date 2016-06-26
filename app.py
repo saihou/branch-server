@@ -130,7 +130,6 @@ def room_message(data):
 
     # create new branch
     if branch not in DATA.keys():
-        print 'Creating new branch'
         DATA[branch] = {
         'status': 'active',
         'openedTime': currTime,
@@ -202,11 +201,20 @@ def update_summary(branch):
             if entity["occurrences"] > activityOccurrences:
                 activity = entity["entity"]
                 activityOccurrences = entity["occurrences"]
+    DATA[branch]["location"] = location
+    DATA[branch]["datetime"] = datetime
+    DATA[branch]["activity"] = activity
+    sentiments_aggregates = {}
+    sentiments = hpe_client.get_user_sentiments(branch, DATA)
+    for user in sentiments.keys():
+        sentiments_aggregates[user] = sentiments[user]["aggregate"]["sentiment"]
+    DATA[branch]["sentiments"] = sentiments_aggregates
     emit('branch info', {
         'branch_name': branch,
         'location': location,
         'datetime': datetime,
-        'activity': activity
+        'activity': activity,
+        'sentiments': sentiments_aggregates
         },
         room=room)
     
