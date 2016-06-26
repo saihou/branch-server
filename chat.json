@@ -18,6 +18,18 @@
 				"username": "Jessica",
 				"message": "Shall we watch Finding Dory tonight?",
 				"isBranch": true
+			},
+			{
+				"username": "Jessica",
+				"message": "Branch is such a cool chat application!"
+			},
+			{
+				"username": "Jack",
+				"message": "I know right! Now I can always keep up with you girls' pace!"
+			},
+			{
+				"username": "Jessica",
+				"message": "Hahaha! Now we can talk even more and you can sleep more!"
 			}
 		]
 	},
