@@ -184,7 +184,7 @@ def update_summary(branch):
     locationOccurrences = 0;
     datetime = 0
     datetimeOccurrences = 0;
-    datetimeSeq = 0;
+    datetimeSeq = -1;
     activity = ''
     activityOccurrences = 0;
     pprint(entities)
